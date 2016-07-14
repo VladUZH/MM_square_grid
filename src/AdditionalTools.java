@@ -110,7 +110,40 @@ public class AdditionalTools {
 //    }
 
 
-    static void saveResultsToFile(String fileName, ArrayList<String> columnNames, ArrayList<double[]> columns){
+//    static void saveResultsToFile(String fileName, ArrayList<String> columnNames, ArrayList<double[]> columns){
+//        try {
+//            String dateString = new SimpleDateFormat("yyyy-MM-dd_hh-mm-ss").format(new Date());
+//
+//            fileName = fileName + "_" + dateString + ".csv";
+//
+//            PrintWriter writer = new PrintWriter("Results/" + fileName, "UTF-8");
+//
+//            String colimnString = "";
+//            for (String columnName : columnNames){
+//                colimnString += columnName + ";";
+//            }
+//            writer.println(colimnString);
+//
+//            int index = 0;
+//            while (index < columns.get(0).length){
+//                String string = "";
+//                for (double[] array : columns){
+//                    string += array[index] + ";";
+//                }
+//                writer.println(string);
+//                index += 1;
+//            }
+//            writer.close();
+//            System.out.println("The result is saved like " + fileName);
+//
+//        } catch (IOException e){
+//            e.printStackTrace();
+//        }
+//
+//    }
+
+
+    static void saveResultsToFile(String fileName, ArrayList<String> columnNames, ArrayList<int[]> columns){
         try {
             String dateString = new SimpleDateFormat("yyyy-MM-dd_hh-mm-ss").format(new Date());
 
@@ -127,7 +160,7 @@ public class AdditionalTools {
             int index = 0;
             while (index < columns.get(0).length){
                 String string = "";
-                for (double[] array : columns){
+                for (int[] array : columns){
                     string += array[index] + ";";
                 }
                 writer.println(string);

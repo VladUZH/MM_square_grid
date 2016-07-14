@@ -11,12 +11,24 @@ public class Runner {
     public int type;
     public boolean initalized;
     public double reference;
+    public double totalOSup;
+    public int nDCup;
+    public double totalOSdown;
+    public int nDCdown;
 
     public Runner(double threshUp, double threshDown, ATick aTick, int type){
         prevExtreme = aTick.price;
         prevDC = aTick.price;
         extreme = aTick.price;
         reference = aTick.price;
+        totalOSdown = totalOSup = 0;
+        if (type == -1){
+            nDCdown = 1;
+            nDCup = 0;
+        } else if (type == 1){
+            nDCdown = 0;
+            nDCup = 1;
+        }
 
         this.type = type; deltaUp = threshUp; deltaDown = threshDown; osL = 0.0; initalized = true;
     }
@@ -49,11 +61,13 @@ public class Runner {
                 extreme = aTick.price;
                 prevDC = aTick.price;
                 reference = aTick.price;
+                totalOSdown += osL;
+                nDCup += 1;
                 return -1;
             }
             if( aTick.price < extreme ){
                 extreme = aTick.price;
-                osL = -Math.log(extreme/prevDC)/deltaDown;
+                osL = -Math.log(extreme/prevDC) * 100;
 
                 if( Math.log(extreme/reference) * 100 <= -deltaDown ){
                     reference = extreme;
@@ -68,11 +82,13 @@ public class Runner {
                 extreme = aTick.price;
                 prevDC = aTick.price;
                 reference = aTick.price;
+                totalOSup += osL;
+                nDCdown += 1;
                 return 1;
             }
             if( aTick.price > extreme ){
                 extreme = aTick.price;
-                osL = Math.log(extreme/prevDC)/deltaUp;
+                osL = Math.log(extreme/prevDC) * 100;
 
                 if( Math.log(extreme/reference) * 100 >= deltaUp ){
                     reference = extreme;

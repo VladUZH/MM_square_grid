@@ -9,10 +9,10 @@ public class MM_square_grid {
     public static final double LOWEST_DELTA = 0.1;
     public static final double DELTA_STEP = 0.1;
     public static final int N_DELTAS = 50;
-    public static final double START_PRICE = 10.0;
-    public static final double ALPHA = 2 * LOWEST_DELTA / 100.0 * START_PRICE;
+    public static final int START_PRICE = 1000;
     public static final int N_GENERATIONS = 10000;
-    public static final double MIN_PRICE_MOVE = 0.01;
+    public static final int MIN_PRICE_MOVE = 1;
+
 
 
 
@@ -22,7 +22,7 @@ public class MM_square_grid {
 
         // for generated prices:
         ArrayList<String> namesGeneratedPrices = new ArrayList<>();
-        ArrayList<double[]> generatedPricesList = new ArrayList<>();
+        ArrayList<int[]> generatedPricesList = new ArrayList<>();
 
 
 
@@ -44,12 +44,12 @@ public class MM_square_grid {
 
         int nIterations = 1000;
 
-        double[] averagePrices = new double[N_GENERATIONS];
+        int[] averagePrices = new int[N_GENERATIONS];
 
         for (int iteration = 0; iteration < nIterations; iteration++) {
             System.out.println("Iteration " + iteration + " started");
 
-            double[] priceList = new double[N_GENERATIONS];
+            int[] priceList = new int[N_GENERATIONS];
 
 
             ATick aTick = new ATick(START_PRICE);
@@ -59,13 +59,13 @@ public class MM_square_grid {
                 int exceedVolume = 0;
                 for (int stepX = 0; stepX < N_DELTAS; stepX++) {
                     for (int stepY = 0; stepY < N_DELTAS; stepY++) {
-                        if (stepX < stepY){ // "<" - I region, ">" - III region, "==" - II region
+                        if (stepX > stepY){ // "<" - I region, ">" - III region, "==" - II region
 //                        if (true) {
                             exceedVolume += (traders[stepX][stepY].runTrading(aTick));
                         }
                     }
                 }
-                double newPrice = mm.generateNextPrice(aTick.price, exceedVolume);
+                int newPrice = mm.generateNextPrice(aTick.price, exceedVolume);
 //                System.out.println(newPrice);
                 priceList[listIndex] = newPrice;
                 aTick = new ATick(newPrice);

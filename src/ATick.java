@@ -6,10 +6,10 @@ import java.util.Date;
 
 public class ATick {
 
-    double price;
+    int price;
 
 
-    ATick(double price){
+    ATick(int price){
 
         this.price = price;
 

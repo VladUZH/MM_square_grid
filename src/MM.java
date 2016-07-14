@@ -8,18 +8,18 @@ public class MM {
 
     double alpha;
     Random random;
-    double minPriceStep;
+    int minPriceStep;
     double roundCoeff;
 
 
-    MM(double minPriceStep){
+    MM(int minPriceStep){
         alpha = minPriceStep / Math.sqrt(2);
         random = new Random();
         this.minPriceStep = minPriceStep;
         roundCoeff = 1.0 / minPriceStep;
     }
 
-    public double generateNextPrice(double previousPrice, int exceedVolume){
+    public int generateNextPrice(int previousPrice, int exceedVolume){
 
         if (exceedVolume == 0){
             return previousPrice + (random.nextInt(2) * 2 - 1) * minPriceStep;
@@ -31,13 +31,13 @@ public class MM {
 
 
 
-    public double computePriceShift(int exceedVolume){
-        double priceShift = alpha * Math.sqrt(Math.abs(exceedVolume));
+    public int computePriceShift(int exceedVolume){
+        double priceShift = alpha * (int)Math.sqrt(Math.abs(exceedVolume));
         if (exceedVolume < 0){
-            return -Math.round(priceShift * roundCoeff) / roundCoeff;
+            return -(int) Math.round(priceShift);
         }
         else if (exceedVolume > 0){
-            return Math.round(priceShift * roundCoeff) / roundCoeff;
+            return (int) Math.round(priceShift);
         }
         else {
             return 0;
