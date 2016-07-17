@@ -9,14 +9,12 @@ public class MM {
     double alpha;
     Random random;
     int minPriceStep;
-    double roundCoeff;
 
 
     MM(int minPriceStep){
         alpha = minPriceStep / Math.sqrt(2);
         random = new Random();
         this.minPriceStep = minPriceStep;
-        roundCoeff = 1.0 / minPriceStep;
     }
 
     public int generateNextPrice(int previousPrice, int exceedVolume){

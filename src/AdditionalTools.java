@@ -177,29 +177,29 @@ public class AdditionalTools {
 
 
 
-    static float[] GenerateLogSpace(float min, float max, int logBins)
+    static int[] GenerateLogSpace(int min, int max, int logBins)
     {
-        float[] logList = new float[logBins];
-        float m = (float) 1 / (logBins - 1);
-        float quotient = (float) Math.pow(max / min, m);
+        int[] logList = new int[logBins];
+        double m = 1.0 / (logBins - 1);
+        double quotient =  Math.pow(max / min, m);
 
         logList[0] = min;
 
         for (int i = 1; i < logBins; i++){
-            logList[i] = logList[i - 1] * quotient;
+            logList[i] = (int) (logList[i - 1] * quotient);
         }
 
         return logList;
 
     }
 
-    static float[] GenerateLinSpace(float min, float max, int nBins)
+    static int[] GenerateLinSpace(int min, int max, int nBins)
     {
-        float[] linList = new float[nBins];
+        int[] linList = new int[nBins];
 
-        float step = (max - min) / nBins;
+        int step = (max - min) / nBins;
 
-        float nextPoint = min;
+        int nextPoint = min;
 
         for (int i = 0; i < nBins; i++){
             linList[i] = nextPoint;

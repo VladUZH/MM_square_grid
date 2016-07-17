@@ -6,11 +6,11 @@ import java.util.ArrayList;
  */
 public class MM_square_grid {
 
-    public static final double LOWEST_DELTA = 0.1;
-    public static final double DELTA_STEP = 0.1;
+    public static final int LOWEST_DELTA = 1;
+    public static final int DELTA_STEP = 1;
     public static final int N_DELTAS = 50;
-    public static final int START_PRICE = 1000;
-    public static final int N_GENERATIONS = 100000;
+    public static final int START_PRICE = 0;
+    public static final int N_GENERATIONS = 1000000;
     public static final int MIN_PRICE_MOVE = 1;
 
 
@@ -27,7 +27,7 @@ public class MM_square_grid {
 
         // for average OS length:
         ArrayList<String> namesAverageOvershoot = new ArrayList<>();
-        ArrayList<float[]> averageOvershootList = new ArrayList<>();
+        ArrayList<int[]> averageOvershootList = new ArrayList<>();
 
 
 
@@ -41,7 +41,7 @@ public class MM_square_grid {
 
             System.out.println("Iteration " + iteration + " started");
 
-            AverageOvershootMove averageOvershootMove = new AverageOvershootMove(0.1f, 10.0f, 200, true, "bla-bla");
+            AverageOvershootMove averageOvershootMove = new AverageOvershootMove(1, 100, 50, false, "bla-bla");
             namesAverageOvershoot.add("Delta");
             averageOvershootList.add(averageOvershootMove.arrayOfDeltas);
 
@@ -65,7 +65,7 @@ public class MM_square_grid {
                 int exceedVolume = 0;
                 for (int stepX = 0; stepX < N_DELTAS; stepX++) {
                     for (int stepY = 0; stepY < N_DELTAS; stepY++) {
-//                        if (stepX > stepY){ // "<" - I region, ">" - III region, "==" - II region
+//                        if (stepX < stepY){ // "<" - I region, ">" - III region, "==" - II region
                         if (true) {
                             exceedVolume += (traders[stepX][stepY].runTrading(aTick));
                         }
@@ -86,7 +86,7 @@ public class MM_square_grid {
             averageOvershootList.add(averageOvershootMove.massOfAverageDown);
             namesAverageOvershoot.add("AverageTotal");
             averageOvershootList.add(averageOvershootMove.massOfAverageTotal);
-            AdditionalTools.saveResultsToFile("averageOvershoots", namesAverageOvershoot, averageOvershootList, true);
+            AdditionalTools.saveResultsToFile("averageOvershoots", namesAverageOvershoot, averageOvershootList);
 
 
             if (iteration % 10 == 0){

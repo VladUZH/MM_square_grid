@@ -16,7 +16,7 @@ class Trader {
 
 
     Trader(){};
-    Trader(double deltaUp, double deltaDown, double randLimit, int initialDCtype){
+    Trader(int deltaUp, int deltaDown, double randLimit, int initialDCtype){
         rand = new Random();
         on = false;
         this.initialDCtype = initialDCtype;
@@ -48,7 +48,7 @@ class Trader {
                 on = true;
                 currentPosition = initialDCtype;
                 totalNumberOfPositions += 1;
-                return currentPosition;
+                return (2 * currentPosition);
             }
 
 

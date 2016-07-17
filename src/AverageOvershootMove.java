@@ -6,21 +6,21 @@ import java.util.ArrayList;
 public class AverageOvershootMove {
 
     public int nSteps;
-    public float[] arrayOfDeltas;
+    public int[] arrayOfDeltas;
     public ArrayList<Runner> listOfDCOS;
-    public double[] totalOSup;
-    public double[] totalOSdown;
+    public int[] totalOSup;
+    public int[] totalOSdown;
     public long[] nOSup;
     public long[] nOSdown;
-    public float[] massOfAverageUp;
-    public float[] massOfAverageDown;
-    public float[] massOfAverageTotal;
+    public int[] massOfAverageUp;
+    public int[] massOfAverageDown;
+    public int[] massOfAverageTotal;
     public String fileName;
     public boolean initialized;
 
 
 
-    AverageOvershootMove(float minDelta, float maxDelta, int nSteps, boolean logScale, String fileNameInput){
+    AverageOvershootMove(int minDelta, int maxDelta, int nSteps, boolean logScale, String fileNameInput){
 
         this.nSteps = nSteps;
         initialized = false;
@@ -34,17 +34,17 @@ public class AverageOvershootMove {
 
         listOfDCOS = new ArrayList<Runner>();
 
-        for (float delta : arrayOfDeltas){
+        for (int delta : arrayOfDeltas){
             listOfDCOS.add(new Runner(delta, delta, -1));
         }
 
-        totalOSdown = new double[nSteps];
-        totalOSup = new double[nSteps];
+        totalOSdown = new int[nSteps];
+        totalOSup = new int[nSteps];
         nOSup = new long[nSteps];
         nOSdown = new long[nSteps];
-        massOfAverageUp = new float[nSteps];
-        massOfAverageDown = new float[nSteps];
-        massOfAverageTotal = new float[nSteps];
+        massOfAverageUp = new int[nSteps];
+        massOfAverageDown = new int[nSteps];
+        massOfAverageTotal = new int[nSteps];
 
         fileName = fileNameInput;
 
@@ -83,9 +83,10 @@ public class AverageOvershootMove {
 
         int stepNumber = 0;
         while (stepNumber < nSteps) {
-            massOfAverageUp[stepNumber] = (float) totalOSup[stepNumber] / nOSup[stepNumber];
-            massOfAverageDown[stepNumber] = (float) totalOSdown[stepNumber] / nOSdown[stepNumber];
-            massOfAverageTotal[stepNumber] = (float) (totalOSup[stepNumber] + totalOSdown[stepNumber]) / (nOSup[stepNumber] + nOSdown[stepNumber]);
+            massOfAverageUp[stepNumber] =  (int) (totalOSup[stepNumber] / nOSup[stepNumber]);
+            massOfAverageDown[stepNumber] =  (int) (totalOSdown[stepNumber] / nOSdown[stepNumber]);
+            massOfAverageTotal[stepNumber] =  (int)((totalOSup[stepNumber] + totalOSdown[stepNumber]) / (nOSup[stepNumber]
+                    + nOSdown[stepNumber]));
             stepNumber += 1;
         }
 
