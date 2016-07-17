@@ -110,37 +110,37 @@ public class AdditionalTools {
 //    }
 
 
-//    static void saveResultsToFile(String fileName, ArrayList<String> columnNames, ArrayList<double[]> columns){
-//        try {
-//            String dateString = new SimpleDateFormat("yyyy-MM-dd_hh-mm-ss").format(new Date());
-//
-//            fileName = fileName + "_" + dateString + ".csv";
-//
-//            PrintWriter writer = new PrintWriter("Results/" + fileName, "UTF-8");
-//
-//            String colimnString = "";
-//            for (String columnName : columnNames){
-//                colimnString += columnName + ";";
-//            }
-//            writer.println(colimnString);
-//
-//            int index = 0;
-//            while (index < columns.get(0).length){
-//                String string = "";
-//                for (double[] array : columns){
-//                    string += array[index] + ";";
-//                }
-//                writer.println(string);
-//                index += 1;
-//            }
-//            writer.close();
-//            System.out.println("The result is saved like " + fileName);
-//
-//        } catch (IOException e){
-//            e.printStackTrace();
-//        }
-//
-//    }
+    static void saveResultsToFile(String fileName, ArrayList<String> columnNames, ArrayList<float[]> columns, boolean Float){
+        try {
+            String dateString = new SimpleDateFormat("yyyy-MM-dd_hh-mm-ss").format(new Date());
+
+            fileName = fileName + "_" + dateString + ".csv";
+
+            PrintWriter writer = new PrintWriter("Results/" + fileName, "UTF-8");
+
+            String colimnString = "";
+            for (String columnName : columnNames){
+                colimnString += columnName + ";";
+            }
+            writer.println(colimnString);
+
+            int index = 0;
+            while (index < columns.get(0).length){
+                String string = "";
+                for (float[] array : columns){
+                    string += array[index] + ";";
+                }
+                writer.println(string);
+                index += 1;
+            }
+            writer.close();
+            System.out.println("The result is saved like " + fileName);
+
+        } catch (IOException e){
+            e.printStackTrace();
+        }
+
+    }
 
 
     static void saveResultsToFile(String fileName, ArrayList<String> columnNames, ArrayList<int[]> columns){
@@ -177,32 +177,32 @@ public class AdditionalTools {
 
 
 
-    static ArrayList<Float> GenerateLogSpace(float min, float max, int logBins)
+    static float[] GenerateLogSpace(float min, float max, int logBins)
     {
-        ArrayList<Float> logList = new ArrayList<Float>();
+        float[] logList = new float[logBins];
         float m = (float) 1 / (logBins - 1);
         float quotient = (float) Math.pow(max / min, m);
 
-        logList.add(min);
+        logList[0] = min;
 
         for (int i = 1; i < logBins; i++){
-            logList.add(logList.get(logList.size() - 1) * quotient);
+            logList[i] = logList[i - 1] * quotient;
         }
 
         return logList;
 
     }
 
-    static ArrayList<Float> GenerateLinSpace(float min, float max, int nBins)
+    static float[] GenerateLinSpace(float min, float max, int nBins)
     {
-        ArrayList<Float> linList = new ArrayList<Float>();
+        float[] linList = new float[nBins];
 
         float step = (max - min) / nBins;
 
         float nextPoint = min;
 
         for (int i = 0; i < nBins; i++){
-            linList.add(nextPoint);
+            linList[i] = nextPoint;
             nextPoint += step;
         }
 
