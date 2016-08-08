@@ -50,7 +50,7 @@ public class Runner {
                 extreme = aTick.price;
                 prevDC = aTick.price;
                 reference = aTick.price;
-                return -1;
+                return 1;
             }
             if( aTick.price < extreme ){
                 extreme = aTick.price;
@@ -59,7 +59,7 @@ public class Runner {
 
                 if( (extreme - reference) <= -deltaDown ){
                     reference = extreme;
-                    return 2;
+                    return -2;
                 }
                 return 0;
             }
@@ -70,7 +70,7 @@ public class Runner {
                 extreme = aTick.price;
                 prevDC = aTick.price;
                 reference = aTick.price;
-                return 1;
+                return -1;
             }
             if( aTick.price > extreme ){
                 extreme = aTick.price;
@@ -79,7 +79,7 @@ public class Runner {
 
                 if( (extreme - reference) >= deltaUp ){
                     reference = extreme;
-                    return -2;
+                    return 2;
                 }
                 return 0;
             }
