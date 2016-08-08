@@ -308,6 +308,14 @@ public class AdditionalTools {
 //        return resultTick;
 //    }
 
+    public static float[] IntArrayToFloat(int[] intArray){
+        float[] floatArray = new float[intArray.length];
+        for (int index = 0; index < intArray.length; index++){
+            floatArray[index] = (float) intArray[index];
+        }
+
+        return floatArray;
+    }
 
 
 }

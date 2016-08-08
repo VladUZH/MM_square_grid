@@ -12,9 +12,9 @@ public class AverageOvershootMove {
     public int[] totalOSdown;
     public long[] nOSup;
     public long[] nOSdown;
-    public int[] massOfAverageUp;
-    public int[] massOfAverageDown;
-    public int[] massOfAverageTotal;
+    public float[] massOfAverageUp;
+    public float[] massOfAverageDown;
+    public float[] massOfAverageTotal;
     public String fileName;
     public boolean initialized;
 
@@ -42,9 +42,9 @@ public class AverageOvershootMove {
         totalOSup = new int[nSteps];
         nOSup = new long[nSteps];
         nOSdown = new long[nSteps];
-        massOfAverageUp = new int[nSteps];
-        massOfAverageDown = new int[nSteps];
-        massOfAverageTotal = new int[nSteps];
+        massOfAverageUp = new float[nSteps];
+        massOfAverageDown = new float[nSteps];
+        massOfAverageTotal = new float[nSteps];
 
         fileName = fileNameInput;
 
@@ -83,9 +83,9 @@ public class AverageOvershootMove {
 
         int stepNumber = 0;
         while (stepNumber < nSteps) {
-            massOfAverageUp[stepNumber] =  (int) (totalOSup[stepNumber] / nOSup[stepNumber]);
-            massOfAverageDown[stepNumber] =  (int) (totalOSdown[stepNumber] / nOSdown[stepNumber]);
-            massOfAverageTotal[stepNumber] =  (int)((totalOSup[stepNumber] + totalOSdown[stepNumber]) / (nOSup[stepNumber]
+            massOfAverageUp[stepNumber] =  (totalOSup[stepNumber] / (float) nOSup[stepNumber]);
+            massOfAverageDown[stepNumber] =  (totalOSdown[stepNumber] / (float) nOSdown[stepNumber]);
+            massOfAverageTotal[stepNumber] =  ((totalOSup[stepNumber] + totalOSdown[stepNumber]) / (float) (nOSup[stepNumber]
                     + nOSdown[stepNumber]));
             stepNumber += 1;
         }

@@ -10,8 +10,9 @@ public class MM_square_grid {
     public static final int DELTA_STEP = 1;
     public static final int N_DELTAS = 50;
     public static final int START_PRICE = 0;
-    public static final int N_GENERATIONS = 1000000;
+    public static final int N_GENERATIONS = 10000000;
     public static final int MIN_PRICE_MOVE = 1;
+    public static final int OS_STEPS = 100;
 
 
 
@@ -23,11 +24,15 @@ public class MM_square_grid {
         // for generated prices:
         ArrayList<String> namesGeneratedPrices = new ArrayList<>();
         ArrayList<int[]> generatedPricesList = new ArrayList<>();
+        int[] averagePrices = new int[N_GENERATIONS];
 
 
         // for average OS length:
         ArrayList<String> namesAverageOvershoot = new ArrayList<>();
-        ArrayList<int[]> averageOvershootList = new ArrayList<>();
+        ArrayList<float[]> averageOvershootList = new ArrayList<>();
+        float[] OSup = new float[OS_STEPS];
+        float[] OSdown = new float[OS_STEPS];
+        float[] OStotal = new float[OS_STEPS];
 
 
 
@@ -35,21 +40,23 @@ public class MM_square_grid {
 
         int nIterations = 1;
 
-        int[] averagePrices = new int[N_GENERATIONS];
 
         for (int iteration = 0; iteration < nIterations; iteration++) {
 
             System.out.println("Iteration " + iteration + " started");
 
-            AverageOvershootMove averageOvershootMove = new AverageOvershootMove(1, 100, 50, false, "bla-bla");
+            AverageOvershootMove averageOvershootMove = new AverageOvershootMove(1, 101, OS_STEPS, false, "bla-bla");
             namesAverageOvershoot.add("Delta");
-            averageOvershootList.add(averageOvershootMove.arrayOfDeltas);
+            averageOvershootList.add(AdditionalTools.IntArrayToFloat(averageOvershootMove.arrayOfDeltas));
 
-            Trader[][] traders = new Trader[N_DELTAS][N_DELTAS];
+            Trader[][] traders1 = new Trader[N_DELTAS][N_DELTAS];
+            Trader[][] traders2 = new Trader[N_DELTAS][N_DELTAS];
+
 
             for (int stepX = 0; stepX < N_DELTAS; stepX++){
                 for (int stepY = 0; stepY < N_DELTAS; stepY++){
-                    traders[stepX][stepY] = new Trader(LOWEST_DELTA + DELTA_STEP * stepY, LOWEST_DELTA + DELTA_STEP * stepX, 0.3, (int) Math.pow(-1, stepX * stepY +1));
+                    traders1[stepX][stepY] = new Trader(LOWEST_DELTA + DELTA_STEP * stepY, LOWEST_DELTA + DELTA_STEP * stepX, 0.3, (int) Math.pow(-1, stepX + stepY));
+                    traders2[stepX][stepY] = new Trader(LOWEST_DELTA + DELTA_STEP * stepY, LOWEST_DELTA + DELTA_STEP * stepX, 0.3, (int) Math.pow(-1, stepX + stepY + 1));
                 }
             }
 
@@ -65,9 +72,10 @@ public class MM_square_grid {
                 int exceedVolume = 0;
                 for (int stepX = 0; stepX < N_DELTAS; stepX++) {
                     for (int stepY = 0; stepY < N_DELTAS; stepY++) {
-//                        if (stepX < stepY){ // "<" - I region, ">" - III region, "==" - II region
+//                        if (stepX == stepY){ // "<" - I region, ">" - III region, "==" - II region
                         if (true) {
-                            exceedVolume += (traders[stepX][stepY].runTrading(aTick));
+                            exceedVolume += (traders1[stepX][stepY].runTrading(aTick));
+                            exceedVolume += (traders2[stepX][stepY].runTrading(aTick));
                         }
                     }
                 }
@@ -80,23 +88,29 @@ public class MM_square_grid {
             }
 
             averageOvershootMove.finish();
-            namesAverageOvershoot.add("AverageUp");
-            averageOvershootList.add(averageOvershootMove.massOfAverageUp);
-            namesAverageOvershoot.add("AverageDown");
-            averageOvershootList.add(averageOvershootMove.massOfAverageDown);
-            namesAverageOvershoot.add("AverageTotal");
-            averageOvershootList.add(averageOvershootMove.massOfAverageTotal);
-            AdditionalTools.saveResultsToFile("averageOvershoots", namesAverageOvershoot, averageOvershootList);
-
 
             if (iteration % 10 == 0){
                 namesGeneratedPrices.add("Gen" + iteration);
                 generatedPricesList.add(priceList);
+
+                namesAverageOvershoot.add("Gen" + iteration + "Up");
+                averageOvershootList.add(averageOvershootMove.massOfAverageUp);
+                namesAverageOvershoot.add("Gen" + iteration + "Down");
+                averageOvershootList.add(averageOvershootMove.massOfAverageDown);
+                namesAverageOvershoot.add("Gen" + iteration + "Total");
+                averageOvershootList.add(averageOvershootMove.massOfAverageTotal);
             }
 
 
             for (listIndex = 0; listIndex < N_GENERATIONS; listIndex++) {
                 averagePrices[listIndex] += priceList[listIndex];
+            }
+
+
+            for (listIndex = 0; listIndex < OS_STEPS; listIndex++){
+                OSup[listIndex] += averageOvershootMove.massOfAverageUp[listIndex];
+                OSdown[listIndex] += averageOvershootMove.massOfAverageDown[listIndex];
+                OStotal[listIndex] += averageOvershootMove.massOfAverageTotal[listIndex];
             }
 
 
@@ -106,6 +120,14 @@ public class MM_square_grid {
 
         for (int listIndex = 0; listIndex < N_GENERATIONS; listIndex++){
             averagePrices[listIndex] /= nIterations;
+
+        }
+
+        for (int listIndex = 0; listIndex < OS_STEPS; listIndex++){
+            OSup[listIndex] /= nIterations;
+            OSdown[listIndex] /= nIterations;
+            OStotal[listIndex] /= nIterations;
+
         }
 
 
@@ -117,6 +139,17 @@ public class MM_square_grid {
         namesGeneratedPrices.add("Average");
         generatedPricesList.add(averagePrices);
         AdditionalTools.saveResultsToFile("generatedPrices", namesGeneratedPrices, generatedPricesList);
+
+
+
+        namesAverageOvershoot.add("AverageUP");
+        averageOvershootList.add(OSup);
+        namesAverageOvershoot.add("AverageDOWN");
+        averageOvershootList.add(OSdown);
+        namesAverageOvershoot.add("AverageTOTAL");
+        averageOvershootList.add(OStotal);
+        AdditionalTools.saveResultsToFile("averageOvershoots", namesAverageOvershoot, averageOvershootList, true);
+
 
 
 
