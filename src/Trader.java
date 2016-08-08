@@ -39,7 +39,7 @@ class Trader {
                 } else { // flip position: close previous and open an opposite
                     currentPosition = currentPosition * (-1);
                     totalNumberOfPositions += 1;
-                    return (2 * currentPosition);
+                    return currentPosition;
 
                 }
             }
