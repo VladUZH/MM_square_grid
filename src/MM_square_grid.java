@@ -24,6 +24,7 @@ public class MM_square_grid {
         // for generated prices:
         ArrayList<String> namesGeneratedPrices = new ArrayList<>();
         ArrayList<int[]> generatedPricesList = new ArrayList<>();
+        long[] sumPrices = new long[N_GENERATIONS];
         int[] averagePrices = new int[N_GENERATIONS];
 
 
@@ -50,7 +51,7 @@ public class MM_square_grid {
             averageOvershootList.add(AdditionalTools.IntArrayToFloat(averageOvershootMove.arrayOfDeltas));
 
             Trader[][] traders1 = new Trader[N_DELTAS][N_DELTAS];
-            Trader[][] traders2 = new Trader[N_DELTAS][N_DELTAS];
+            Trader[][] traders2 = new Trader[N_DELTAS][N_DELTAS]; // for symmetry
 
 
             for (int stepX = 0; stepX < N_DELTAS; stepX++){
@@ -83,6 +84,7 @@ public class MM_square_grid {
                 int newPrice = mm.generateNextPrice(aTick.price, exceedVolume);
 //                System.out.println(newPrice);
                 priceList[listIndex] = newPrice;
+                sumPrices[listIndex] += newPrice;
                 aTick = new ATick(newPrice);
                 listIndex++;
             }
@@ -101,12 +103,6 @@ public class MM_square_grid {
                 averageOvershootList.add(averageOvershootMove.massOfAverageTotal);
             }
 
-
-            for (listIndex = 0; listIndex < N_GENERATIONS; listIndex++) {
-                averagePrices[listIndex] += priceList[listIndex];
-            }
-
-
             for (listIndex = 0; listIndex < OS_STEPS; listIndex++){
                 OSup[listIndex] += averageOvershootMove.massOfAverageUp[listIndex];
                 OSdown[listIndex] += averageOvershootMove.massOfAverageDown[listIndex];
@@ -119,7 +115,7 @@ public class MM_square_grid {
 
 
         for (int listIndex = 0; listIndex < N_GENERATIONS; listIndex++){
-            averagePrices[listIndex] /= nIterations;
+            averagePrices[listIndex] = (int) sumPrices[listIndex] / nIterations;
 
         }
 
