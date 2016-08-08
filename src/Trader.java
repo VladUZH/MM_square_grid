@@ -31,12 +31,12 @@ class Trader {
     public int runTrading(ATick aTick){ // returns the opened volume
         int event = runner.run(aTick);
 
-        if (event != 0){ // in case of overshoot or deltaStar
+        if (event != 0){ // in case of DC or deltaStar
 
             if (on){
                 if (rand.nextDouble() < randLimit){ // should stay
                     return 0;
-                } else { // flip position: close previous and open an opposite one
+                } else { // flip position: close previous and open an opposite
                     currentPosition = currentPosition * (-1);
                     totalNumberOfPositions += 1;
                     return (2 * currentPosition);
@@ -44,11 +44,11 @@ class Trader {
                 }
             }
 
-            else if (!on){
+            else if (!on){ // open only in case of DC (not OS)
                 on = true;
                 currentPosition = initialDCtype;
                 totalNumberOfPositions += 1;
-                return (2 * currentPosition);
+                return currentPosition;
             }
 
 
