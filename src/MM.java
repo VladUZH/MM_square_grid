@@ -32,10 +32,10 @@ public class MM {
     public int computePriceShift(int exceedVolume){
         double priceShift = alpha * Math.sqrt(Math.abs(exceedVolume));
         if (exceedVolume < 0){
-            return -(int) Math.round(priceShift);
+            return -(int) Math.floor(priceShift);
         }
         else if (exceedVolume > 0){
-            return (int) Math.round(priceShift);
+            return (int) Math.floor(priceShift);
         }
         else {
             return 0;
