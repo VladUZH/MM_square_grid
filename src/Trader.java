@@ -46,7 +46,7 @@ class Trader {
 
             else if (!on){ // open only in case of DC (not OS)
                 on = true;
-                currentPosition = initialDCtype;
+                currentPosition = (rand.nextDouble() > 0.5 ? 1 : -1);
                 totalNumberOfPositions += 1;
                 return currentPosition;
             }
