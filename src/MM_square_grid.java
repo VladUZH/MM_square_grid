@@ -1,5 +1,6 @@
 import javax.xml.ws.soap.Addressing;
 import java.util.ArrayList;
+import java.util.Random;
 
 /**
  * Created by Vladimir Petrov on 07.07.2016.
@@ -44,20 +45,19 @@ public class MM_square_grid {
 
         for (int iteration = 0; iteration < nIterations; iteration++) {
 
-            System.out.println("Iteration " + iteration + " started");
+            System.out.println("Iteration " + iteration + " is started");
 
             AverageOvershootMove averageOvershootMove = new AverageOvershootMove(1, 101, OS_STEPS, false, "bla-bla");
             namesAverageOvershoot.add("Delta");
             averageOvershootList.add(AdditionalTools.IntArrayToFloat(averageOvershootMove.arrayOfDeltas));
 
             Trader[][] traders1 = new Trader[N_DELTAS][N_DELTAS];
-            Trader[][] traders2 = new Trader[N_DELTAS][N_DELTAS]; // for symmetry
 
+            Random rand = new Random(1);
 
             for (int stepX = 0; stepX < N_DELTAS; stepX++){
                 for (int stepY = 0; stepY < N_DELTAS; stepY++){
-                    traders1[stepX][stepY] = new Trader(LOWEST_DELTA + DELTA_STEP * stepY, LOWEST_DELTA + DELTA_STEP * stepX, 0.3, (int) Math.pow(-1, stepX + stepY));
-                    traders2[stepX][stepY] = new Trader(LOWEST_DELTA + DELTA_STEP * stepY, LOWEST_DELTA + DELTA_STEP * stepX, 0.3, (int) Math.pow(-1, stepX + stepY + 1));
+                    traders1[stepX][stepY] = new Trader(LOWEST_DELTA + DELTA_STEP * stepY, LOWEST_DELTA + DELTA_STEP * stepX, 0.3, (rand.nextDouble() > 0.5 ? 1 : -1));
                 }
             }
 
@@ -76,7 +76,6 @@ public class MM_square_grid {
 //                        if (stepX == stepY){ // "<" - I region, ">" - III region, "==" - II region
                         if (true) {
                             exceedVolume += (traders1[stepX][stepY].runTrading(aTick));
-                            exceedVolume += (traders2[stepX][stepY].runTrading(aTick));
                         }
                     }
                 }
