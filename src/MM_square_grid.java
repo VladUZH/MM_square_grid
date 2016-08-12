@@ -11,7 +11,7 @@ public class MM_square_grid {
     public static final int DELTA_STEP = 1;
     public static final int N_DELTAS = 50;
     public static final int START_PRICE = 0;
-    public static final int N_GENERATIONS = 10000000;
+    public static final int N_GENERATIONS = 10000;
     public static final int MIN_PRICE_MOVE = 1;
     public static final int OS_STEPS = 100;
 
@@ -36,16 +36,20 @@ public class MM_square_grid {
         float[] OSdown = new float[OS_STEPS];
         float[] OStotal = new float[OS_STEPS];
 
+        // for how many times agents trade:
+        ArrayList<String> namesHowManyTrades = new ArrayList<>();
+        ArrayList<int[]> averageHowManyList = new ArrayList<>();
+        int[][] totalEveryTrade = new int[N_DELTAS][N_DELTAS];
 
 
 
 
-        int nIterations = 1;
+
+        int nIterations = 1000;
 
 
         for (int iteration = 0; iteration < nIterations; iteration++) {
 
-            System.out.println("Iteration " + iteration + " is started");
 
             AverageOvershootMove averageOvershootMove = new AverageOvershootMove(1, 101, OS_STEPS, false, "bla-bla");
             namesAverageOvershoot.add("Delta");
@@ -91,6 +95,7 @@ public class MM_square_grid {
             averageOvershootMove.finish();
 
             if (iteration % 10 == 0){
+                System.out.println("Iteration " + iteration + " is executing");
                 namesGeneratedPrices.add("Gen" + iteration);
                 generatedPricesList.add(priceList);
 
@@ -107,6 +112,13 @@ public class MM_square_grid {
                 OSdown[listIndex] += averageOvershootMove.massOfAverageDown[listIndex];
                 OStotal[listIndex] += averageOvershootMove.massOfAverageTotal[listIndex];
             }
+
+            for (int stepX = 0; stepX < N_DELTAS; stepX++){
+                for (int stepY = 0; stepY < N_DELTAS; stepY++){
+                    totalEveryTrade[stepY][stepX] += traders1[stepX][stepY].totalNumberOfPositions; // should be like this to handle the final file structure problem.
+                }
+            }
+
 
 
         }
@@ -125,7 +137,11 @@ public class MM_square_grid {
 
         }
 
-
+        for (int stepX = 0; stepX < N_DELTAS; stepX++){
+            for (int stepY = 0; stepY < N_DELTAS; stepY++){
+                totalEveryTrade[stepX][stepY] /= (float) nIterations;
+            }
+        }
 
 
 
@@ -144,6 +160,14 @@ public class MM_square_grid {
         namesAverageOvershoot.add("AverageTOTAL");
         averageOvershootList.add(OStotal);
         AdditionalTools.saveResultsToFile("averageOvershoots", namesAverageOvershoot, averageOvershootList, true);
+
+
+
+        for (int i = 0; i < N_DELTAS; i++){
+            namesHowManyTrades.add(Integer.toString(i));
+            averageHowManyList.add(totalEveryTrade[i]); // do not forget to turn 90° counterclockwise!
+        }
+        AdditionalTools.saveResultsToFile("averageHowManyTrades", namesHowManyTrades, averageHowManyList);
 
 
 
