@@ -41,6 +41,11 @@ public class MM_square_grid {
         ArrayList<int[]> averageHowManyList = new ArrayList<>();
         int[][] totalEveryTrade = new int[N_DELTAS][N_DELTAS];
 
+        // for total PnL of each agent:
+        ArrayList<String> namesTotalPnL = new ArrayList<>();
+        ArrayList<int[]> averageTotalPnL = new ArrayList<>();
+        int[][] totalTotalPnL = new int[N_DELTAS][N_DELTAS];
+
 
 
 
@@ -116,9 +121,9 @@ public class MM_square_grid {
             for (int stepX = 0; stepX < N_DELTAS; stepX++){
                 for (int stepY = 0; stepY < N_DELTAS; stepY++){
                     totalEveryTrade[stepY][stepX] += traders1[stepX][stepY].totalNumberOfPositions; // should be like this to handle the final file structure problem.
+                    totalTotalPnL[stepY][stepX] += traders1[stepX][stepY].totalPnL; // should be like this to handle the final file structure problem.
                 }
             }
-
 
 
         }
@@ -140,6 +145,12 @@ public class MM_square_grid {
         for (int stepX = 0; stepX < N_DELTAS; stepX++){
             for (int stepY = 0; stepY < N_DELTAS; stepY++){
                 totalEveryTrade[stepX][stepY] /= (float) nIterations;
+            }
+        }
+
+        for (int stepX = 0; stepX < N_DELTAS; stepX++){
+            for (int stepY = 0; stepY < N_DELTAS; stepY++){
+                totalTotalPnL[stepX][stepY] /= (float) nIterations;
             }
         }
 
@@ -169,6 +180,11 @@ public class MM_square_grid {
         }
         AdditionalTools.saveResultsToFile("averageHowManyTrades", namesHowManyTrades, averageHowManyList);
 
+        for (int i = 0; i < N_DELTAS; i++){
+            namesTotalPnL.add(Integer.toString(i));
+            averageTotalPnL.add(totalTotalPnL[i]); // do not forget to turn 90° counterclockwise!
+        }
+        AdditionalTools.saveResultsToFile("averageTotalPnL", namesTotalPnL, averageTotalPnL);
 
 
 
