@@ -46,6 +46,12 @@ public class MM_square_grid {
         ArrayList<int[]> averageTotalPnL = new ArrayList<>();
         int[][] totalTotalPnL = new int[N_DELTAS][N_DELTAS];
 
+        // for net volume:
+        ArrayList<String> namesNetVolume = new ArrayList<>();
+        ArrayList<int[]> netVolumeList = new ArrayList<>();
+        long[] sumNetVolume = new long[N_GENERATIONS];
+        int[] averageNetVolume = new int[N_GENERATIONS];
+
 
 
 
@@ -73,6 +79,7 @@ public class MM_square_grid {
             MM mm = new MM(MIN_PRICE_MOVE);
 
             int[] priceList = new int[N_GENERATIONS];
+            int[] netVolume = new int[N_GENERATIONS];
 
             ATick aTick = new ATick(START_PRICE);
 
@@ -93,6 +100,8 @@ public class MM_square_grid {
 //                System.out.println(newPrice);
                 priceList[listIndex] = newPrice;
                 sumPrices[listIndex] += newPrice;
+                netVolume[listIndex] = exceedVolume;
+                sumNetVolume[listIndex] += exceedVolume;
                 aTick = new ATick(newPrice);
                 listIndex++;
             }
@@ -102,7 +111,9 @@ public class MM_square_grid {
             if (iteration % 10 == 0){
                 System.out.println("Iteration " + iteration + " is executing");
                 namesGeneratedPrices.add("Gen" + iteration);
+                namesNetVolume.add("Gen" + iteration);
                 generatedPricesList.add(priceList);
+                netVolumeList.add(netVolume);
 
                 namesAverageOvershoot.add("Gen" + iteration + "Up");
                 averageOvershootList.add(averageOvershootMove.massOfAverageUp);
@@ -132,6 +143,7 @@ public class MM_square_grid {
 
         for (int listIndex = 0; listIndex < N_GENERATIONS; listIndex++){
             averagePrices[listIndex] = (int) sumPrices[listIndex] / nIterations;
+            averageNetVolume[listIndex] = (int) sumNetVolume[listIndex] / nIterations;
 
         }
 
@@ -161,6 +173,10 @@ public class MM_square_grid {
         namesGeneratedPrices.add("Average");
         generatedPricesList.add(averagePrices);
         AdditionalTools.saveResultsToFile("generatedPrices", namesGeneratedPrices, generatedPricesList);
+
+        namesNetVolume.add("Average");
+        netVolumeList.add(averageNetVolume);
+        AdditionalTools.saveResultsToFile("netVolume", namesNetVolume, netVolumeList);
 
 
 
