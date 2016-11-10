@@ -1,4 +1,8 @@
 import javax.xml.ws.soap.Addressing;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -10,210 +14,97 @@ public class MM_square_grid {
     public static final int LOWEST_DELTA = 1;
     public static final int DELTA_STEP = 1;
     public static final int N_DELTAS = 50;
-    public static final int START_PRICE = 0;
-    public static final int N_GENERATIONS = 10000;
-    public static final int MIN_PRICE_MOVE = 1;
-    public static final int OS_STEPS = 100;
 
+    public static final String FILE_PATH = "D:/Data/OANDA/Positions/";
 
 
 
 
     public static void main(String[] args){
 
+//        String fileName = "OANDA_historical_position_ratios_data_EUR_USD.csv";
+        String fileName = "OANDA_historical_position_ratios_data_USD_CHF.csv";
 
-        // for generated prices:
-        ArrayList<String> namesGeneratedPrices = new ArrayList<>();
-        ArrayList<int[]> generatedPricesList = new ArrayList<>();
-        long[] sumPrices = new long[N_GENERATIONS];
-        int[] averagePrices = new int[N_GENERATIONS];
+        ATick aTick;
 
+        Trader[][] traders1 = new Trader[N_DELTAS][N_DELTAS];
 
-        // for average OS length:
-        ArrayList<String> namesAverageOvershoot = new ArrayList<>();
-        ArrayList<float[]> averageOvershootList = new ArrayList<>();
-        float[] OSup = new float[OS_STEPS];
-        float[] OSdown = new float[OS_STEPS];
-        float[] OStotal = new float[OS_STEPS];
+        Random rand = new Random(1);
 
-        // for how many times agents trade:
-        ArrayList<String> namesHowManyTrades = new ArrayList<>();
-        ArrayList<int[]> averageHowManyList = new ArrayList<>();
-        int[][] totalEveryTrade = new int[N_DELTAS][N_DELTAS];
-
-        // for total PnL of each agent:
-        ArrayList<String> namesTotalPnL = new ArrayList<>();
-        ArrayList<int[]> averageTotalPnL = new ArrayList<>();
-        int[][] totalTotalPnL = new int[N_DELTAS][N_DELTAS];
-
-        // for net volume:
-        ArrayList<String> namesNetVolume = new ArrayList<>();
-        ArrayList<int[]> netVolumeList = new ArrayList<>();
-        long[] sumNetVolume = new long[N_GENERATIONS];
-        int[] averageNetVolume = new int[N_GENERATIONS];
-
-
-
-
-
-        int nIterations = 1000;
-
-
-        for (int iteration = 0; iteration < nIterations; iteration++) {
-
-
-            AverageOvershootMove averageOvershootMove = new AverageOvershootMove(1, 101, OS_STEPS, false, "bla-bla");
-            namesAverageOvershoot.add("Delta");
-            averageOvershootList.add(AdditionalTools.IntArrayToFloat(averageOvershootMove.arrayOfDeltas));
-
-            Trader[][] traders1 = new Trader[N_DELTAS][N_DELTAS];
-
-            Random rand = new Random(1);
-
-            for (int stepX = 0; stepX < N_DELTAS; stepX++){
-                for (int stepY = 0; stepY < N_DELTAS; stepY++){
-                    traders1[stepX][stepY] = new Trader(LOWEST_DELTA + DELTA_STEP * stepY, LOWEST_DELTA + DELTA_STEP * stepX, 0.3, (rand.nextDouble() > 0.5 ? 1 : -1));
-                }
+        for (int stepX = 0; stepX < N_DELTAS; stepX++){
+            for (int stepY = 0; stepY < N_DELTAS; stepY++){
+                traders1[stepX][stepY] = new Trader(LOWEST_DELTA + DELTA_STEP * stepY, LOWEST_DELTA + DELTA_STEP * stepX, 0.3, (rand.nextDouble() > 0.5 ? 1 : -1));
             }
+        }
 
-            MM mm = new MM(MIN_PRICE_MOVE);
+        try {
+            BufferedReader bufferedReader = new BufferedReader(new FileReader(FILE_PATH + fileName));
 
-            int[] priceList = new int[N_GENERATIONS];
-            int[] netVolume = new int[N_GENERATIONS];
+            String thisLine = bufferedReader.readLine(); // header
 
-            ATick aTick = new ATick(START_PRICE);
+            String line;
+            String[] components;
 
+            boolean firstString = true;
 
-            int listIndex = 0;
-            for (int aGeneration = 0; aGeneration < N_GENERATIONS; aGeneration++) {
-                int exceedVolume = 0;
+            int nDecimal = 0;
+
+            String outFileName = "RESULT_" + fileName;
+            PrintWriter writer = new PrintWriter("Results/" + outFileName, "UTF-8");
+            writer.println("Timestamp;Price;OANDA_pctLong;Agents_pctLong");
+
+            while ((line = bufferedReader.readLine()) != null) {
+                components = line.split(",");
+
+                if (firstString){
+                    nDecimal = 4;
+                    firstString = false;
+                }
+
+                int intPrice = (int) (Double.parseDouble(components[2]) * Math.pow(10, nDecimal));
+
+                aTick = new ATick(intPrice);
+
+                int nLong = 0;
+                int nShort = 0;
+
                 for (int stepX = 0; stepX < N_DELTAS; stepX++) {
                     for (int stepY = 0; stepY < N_DELTAS; stepY++) {
 //                        if (stepX == stepY){ // "<" - I region, ">" - III region, "==" - II region
                         if (true) {
-                            exceedVolume += (traders1[stepX][stepY].runTrading(aTick));
+                            int traderPosition = traders1[stepX][stepY].runTrading(aTick);
+                            if (traderPosition > 0){
+                                nLong++;
+                            } else if (traderPosition < 0){
+                                nShort++;
+                            }
                         }
                     }
                 }
-                averageOvershootMove.run(aTick);
-                int newPrice = mm.generateNextPrice(aTick.price, exceedVolume);
-//                System.out.println(newPrice);
-                priceList[listIndex] = newPrice;
-                sumPrices[listIndex] += newPrice;
-                netVolume[listIndex] = exceedVolume;
-                sumNetVolume[listIndex] += exceedVolume;
-                aTick = new ATick(newPrice);
-                listIndex++;
+
+                float fractionLong = (nLong) * 1.0f / (nLong + nShort) * 100;
+
+                System.out.println("OANDA: " + components[1] + ", Agents: " + fractionLong);
+
+
+                writer.println(components[0] + ";" + components[2] + ";" + components[1] + ";" + fractionLong);
+
+
+
+
+
+
             }
 
-            averageOvershootMove.finish();
-
-            if (iteration % 10 == 0){
-                System.out.println("Iteration " + iteration + " is executing");
-                namesGeneratedPrices.add("Gen" + iteration);
-                namesNetVolume.add("Gen" + iteration);
-                generatedPricesList.add(priceList);
-                netVolumeList.add(netVolume);
-
-                namesAverageOvershoot.add("Gen" + iteration + "Up");
-                averageOvershootList.add(averageOvershootMove.massOfAverageUp);
-                namesAverageOvershoot.add("Gen" + iteration + "Down");
-                averageOvershootList.add(averageOvershootMove.massOfAverageDown);
-                namesAverageOvershoot.add("Gen" + iteration + "Total");
-                averageOvershootList.add(averageOvershootMove.massOfAverageTotal);
-            }
-
-            for (listIndex = 0; listIndex < OS_STEPS; listIndex++){
-                OSup[listIndex] += averageOvershootMove.massOfAverageUp[listIndex];
-                OSdown[listIndex] += averageOvershootMove.massOfAverageDown[listIndex];
-                OStotal[listIndex] += averageOvershootMove.massOfAverageTotal[listIndex];
-            }
-
-            for (int stepX = 0; stepX < N_DELTAS; stepX++){
-                for (int stepY = 0; stepY < N_DELTAS; stepY++){
-                    totalEveryTrade[stepY][stepX] += traders1[stepX][stepY].totalNumberOfPositions; // should be like this to handle the final file structure problem.
-                    totalTotalPnL[stepY][stepX] += traders1[stepX][stepY].totalPnL; // should be like this to handle the final file structure problem.
-                }
-            }
+            writer.close();
 
 
+        } catch (IOException ex){
+            ex.printStackTrace();
         }
-
-
-
-        for (int listIndex = 0; listIndex < N_GENERATIONS; listIndex++){
-            averagePrices[listIndex] = (int) sumPrices[listIndex] / nIterations;
-            averageNetVolume[listIndex] = (int) sumNetVolume[listIndex] / nIterations;
-
-        }
-
-        for (int listIndex = 0; listIndex < OS_STEPS; listIndex++){
-            OSup[listIndex] /= nIterations;
-            OSdown[listIndex] /= nIterations;
-            OStotal[listIndex] /= nIterations;
-
-        }
-
-        for (int stepX = 0; stepX < N_DELTAS; stepX++){
-            for (int stepY = 0; stepY < N_DELTAS; stepY++){
-                totalEveryTrade[stepX][stepY] /= (float) nIterations;
-            }
-        }
-
-        for (int stepX = 0; stepX < N_DELTAS; stepX++){
-            for (int stepY = 0; stepY < N_DELTAS; stepY++){
-                totalTotalPnL[stepX][stepY] /= (float) nIterations;
-            }
-        }
-
-
-
-
-
-        namesGeneratedPrices.add("Average");
-        generatedPricesList.add(averagePrices);
-        AdditionalTools.saveResultsToFile("generatedPrices", namesGeneratedPrices, generatedPricesList);
-
-        namesNetVolume.add("Average");
-        netVolumeList.add(averageNetVolume);
-        AdditionalTools.saveResultsToFile("netVolume", namesNetVolume, netVolumeList);
-
-
-
-        namesAverageOvershoot.add("AverageUP");
-        averageOvershootList.add(OSup);
-        namesAverageOvershoot.add("AverageDOWN");
-        averageOvershootList.add(OSdown);
-        namesAverageOvershoot.add("AverageTOTAL");
-        averageOvershootList.add(OStotal);
-        AdditionalTools.saveResultsToFile("averageOvershoots", namesAverageOvershoot, averageOvershootList, true);
-
-
-
-        for (int i = 0; i < N_DELTAS; i++){
-            namesHowManyTrades.add(Integer.toString(i));
-            averageHowManyList.add(totalEveryTrade[i]); // do not forget to turn 90° counterclockwise!
-        }
-        AdditionalTools.saveResultsToFile("averageHowManyTrades", namesHowManyTrades, averageHowManyList);
-
-        for (int i = 0; i < N_DELTAS; i++){
-            namesTotalPnL.add(Integer.toString(i));
-            averageTotalPnL.add(totalTotalPnL[i]); // do not forget to turn 90° counterclockwise!
-        }
-        AdditionalTools.saveResultsToFile("averageTotalPnL", namesTotalPnL, averageTotalPnL);
-
 
 
     }
-
-
-
-
-
-
-
-
-
 
 
 
