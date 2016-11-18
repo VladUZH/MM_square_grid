@@ -14,6 +14,8 @@ class Trader {
     int totalNumberOfPositions;
     int totalPnL;
     int tradedPrice;
+    int nNothing = 0;
+    int nEvents = 0;
 
 
 
@@ -39,12 +41,14 @@ class Trader {
 
             if (on){
                 if (rand.nextDouble() < randLimit){ // should stay
+                    nEvents++;
                     return 0;
                 } else { // flip position: close previous and open an opposite
                     totalPnL += (aTick.price - tradedPrice) * currentPosition;
                     currentPosition = currentPosition * (-1);
                     totalNumberOfPositions += 1;
                     tradedPrice = aTick.price;
+                    nEvents++;
                     return currentPosition;
 
                 }
@@ -55,10 +59,13 @@ class Trader {
                 currentPosition = (rand.nextDouble() > 0.5 ? 1 : -1);
                 totalNumberOfPositions += 1;
                 tradedPrice = aTick.price;
+                nEvents++;
                 return currentPosition;
             }
 
 
+        } else {
+            nNothing++;
         }
         return 0;
 
