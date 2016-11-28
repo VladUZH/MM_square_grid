@@ -30,7 +30,8 @@ public class MM_square_grid {
     public static void main(String[] args){
 
         String fileName = "OANDA_historical_position_ratios_data_EUR_USD.csv";
-        String trainFileName = "EURUSD_2015_daily.csv";
+//        String trainFileName = "EURUSD_2015_daily.csv";
+        String trainFileName = "EURUSD_UTC_Ticks_Bid_2014-01-01_2015-01-01.csv";
 //        String fileName = "OANDA_historical_position_ratios_data_USD_CHF.csv";
 
         ATick aTick;
@@ -75,8 +76,8 @@ public class MM_square_grid {
                     aTick = new ATick(intPrice);
                     for (int stepX = 0; stepX < N_DELTAS; stepX++) {
                         for (int stepY = 0; stepY < N_DELTAS; stepY++) {
-//                        if (stepX == stepY){ // "<" - I region, ">" - III region, "==" - II region
-                            if (true) {
+                        if (stepX == stepY){ // "<" - I region, ">" - III region, "==" - II region
+//                            if (true) {
                                 traders1[stepX][stepY].runTrading(aTick);
                             }
                         }
@@ -111,7 +112,8 @@ public class MM_square_grid {
 
 
 
-            String outFileName = "RESULT_" + fileName;
+            String dateString = new SimpleDateFormat("yyyy-MM-dd_hh-mm-ss").format(new Date());
+            String outFileName = "RESULT_" + dateString + "_" + fileName;
             PrintWriter writer = new PrintWriter("Results/" + outFileName, "UTF-8");
             writer.println("Timestamp;Price;OANDA_pctLong;Agents_pctLong");
 
@@ -128,8 +130,8 @@ public class MM_square_grid {
 
                 for (int stepX = 0; stepX < N_DELTAS; stepX++) {
                     for (int stepY = 0; stepY < N_DELTAS; stepY++) {
-//                        if (stepX == stepY){ // "<" - I region, ">" - III region, "==" - II region
-                        if (true) {
+                        if (stepX == stepY){ // "<" - I region, ">" - III region, "==" - II region
+//                        if (true) {
                             int traderPosition = traders1[stepX][stepY].runTrading(aTick);
                             if (traderPosition > 0){
                                 nLong++;
