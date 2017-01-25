@@ -12,7 +12,7 @@ public class MM_square_grid {
     public static final int N_DELTAS = 2;
     public static final int START_PRICE = 0;
     public static final int N_GENERATIONS = 10000; // how many generations in one experiment
-    public static final int N_EXPERIMENTS = 1; // number of experiments
+    public static final int N_EXPERIMENTS = 100; // number of experiments
     public static final int MIN_PRICE_MOVE = 1;
     public static final int OS_STEPS = 100;
 
@@ -71,19 +71,19 @@ public class MM_square_grid {
             namesAverageOvershoot.add("Delta");
             averageOvershootList.add(AdditionalTools.IntArrayToFloat(averageOvershootMove.arrayOfDeltas));
 
-            Trader[] traders1 = new Trader[N_DELTAS * N_DELTAS];
+            ArrayList<Trader> traders1 = new ArrayList<>();
 
             Random rand = new Random(1);
 
             // chose this for the FULL grid
             for (int stepX = 0; stepX < N_DELTAS; stepX++){
-                for (int stepY = 0; stepY < N_DELTAS; stepY++){         // for ALL regions
-//                for (int stepY = stepX + 1; stepY < N_DELTAS; stepY++){ // for I region (\delta_{up} > \delta_{down})
+//                for (int stepY = 0; stepY < N_DELTAS; stepY++){         // for ALL regions
+                for (int stepY = stepX + 1; stepY < N_DELTAS; stepY++){ // for I region (\delta_{up} > \delta_{down})
 //                int stepY = stepX;{                                     // for II region (\delta_{up} = \delta_{down})
 //                for (int stepY = 0; stepY < stepX; stepY++){            // for III region (\delta_{up} < \delta_{down})
                     int deltaUp = LOWEST_DELTA + DELTA_STEP * stepY;
                     int deltaDown = LOWEST_DELTA + DELTA_STEP * stepX;
-                    traders1[stepY * N_DELTAS + stepX] = new Trader(deltaUp, deltaDown, 0.3, (rand.nextDouble() > 0.5 ? 1 : -1));
+                    traders1.add(new Trader(deltaUp, deltaDown, 0.3, (rand.nextDouble() > 0.5 ? 1 : -1)));
                     namesPriceAndState.add(String.format("A_%s_%s", deltaUp, deltaDown));
                     priceAndStateList.add(new int[N_GENERATIONS]);
                 }
@@ -110,9 +110,9 @@ public class MM_square_grid {
                 int exceedVolume = 0;
 
 
-                for (int n = 0; n < traders1.length; n++){
-                    exceedVolume += traders1[n].runTrading(aTick);
-                    priceAndStateList.get(n + 1)[aGeneration] = traders1[n].runner.type;
+                for (int n = 0; n < traders1.size(); n++){
+                    exceedVolume += traders1.get(n).runTrading(aTick);
+                    priceAndStateList.get(n + 1)[aGeneration] = traders1.get(n).runner.type;
                 }
 
 
