@@ -52,8 +52,9 @@ public class MM_square_grid {
         long[] sumNetVolume = new long[N_GENERATIONS];
         int[] averageNetVolume = new int[N_GENERATIONS];
 
-
-
+        // for the price and state statistic:
+        ArrayList<String> namesPriceAndState = new ArrayList<>();
+        ArrayList<int[]> priceAndStateList = new ArrayList<>();
 
 
 
@@ -72,23 +73,22 @@ public class MM_square_grid {
 
             Random rand = new Random(1);
 
+            // chose this for the FULL grid
             for (int stepX = 0; stepX < N_DELTAS; stepX++){
-                for (int stepY = 0; stepY < N_DELTAS; stepY++){
-                    traders1[stepY * N_DELTAS + stepX] = new Trader(LOWEST_DELTA + DELTA_STEP * stepY, LOWEST_DELTA + DELTA_STEP * stepX, 0.3, (rand.nextDouble() > 0.5 ? 1 : -1));
+                for (int stepY = 0; stepY < N_DELTAS; stepY++){         // for ALL regions
+//                for (int stepY = stepX + 1; stepY < N_DELTAS; stepY++){ // for I region (\delta_{up} > \delta_{down})
+//                int stepY = stepX;{                                     // for II region (\delta_{up} = \delta_{down})
+//                for (int stepY = 0; stepY < stepX; stepY++){            // for III region (\delta_{up} < \delta_{down})
+                        traders1[stepY * N_DELTAS + stepX] = new Trader(LOWEST_DELTA + DELTA_STEP * stepY, LOWEST_DELTA + DELTA_STEP * stepX, 0.3, (rand.nextDouble() > 0.5 ? 1 : -1));
                 }
             }
 
-
-//            for (int stepX = 0; stepX < N_DELTAS; stepX++) {
-//                for (int stepY = 0; stepY < N_DELTAS; stepY++) {
-//                    if (stepX == 0){ // "<" - I region, ">" - III region, "==" - II region
-////                        if (true) {
-//                        exceedVolume += (traders1[stepX][stepY].runTrading(aTick));
-//                    }
-//                }
-//            }
-
-
+            // chose this for the Ist region only
+            for (int stepX = 0; stepX < N_DELTAS; stepX++){
+                for (int stepY = stepX + 1; stepY < N_DELTAS; stepY++){
+                    traders1[stepY * N_DELTAS + stepX] = new Trader(LOWEST_DELTA + DELTA_STEP * stepY, LOWEST_DELTA + DELTA_STEP * stepX, 0.3, (rand.nextDouble() > 0.5 ? 1 : -1));
+                }
+            }
 
 
             MM mm = new MM(MIN_PRICE_MOVE);
