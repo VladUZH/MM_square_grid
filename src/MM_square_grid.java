@@ -12,6 +12,7 @@ public class MM_square_grid {
     public static final int N_DELTAS = 2;
     public static final int START_PRICE = 0;
     public static final int N_GENERATIONS = 10000; // how many generations in one experiment
+    public static final int N_EXPERIMENTS = 1; // number of experiments
     public static final int MIN_PRICE_MOVE = 1;
     public static final int OS_STEPS = 100;
 
@@ -59,11 +60,12 @@ public class MM_square_grid {
 
 
 
-        int nIterations = 1; // how many experiments
 
 
-        for (int iteration = 0; iteration < nIterations; iteration++) {
+        for (int iteration = 0; iteration < N_EXPERIMENTS; iteration++) {
 
+            namesPriceAndState.add("Price");
+            priceAndStateList.add(new int[N_GENERATIONS]);
 
             AverageOvershootMove averageOvershootMove = new AverageOvershootMove(1, 101, OS_STEPS, false, "bla-bla");
             namesAverageOvershoot.add("Delta");
@@ -79,16 +81,14 @@ public class MM_square_grid {
 //                for (int stepY = stepX + 1; stepY < N_DELTAS; stepY++){ // for I region (\delta_{up} > \delta_{down})
 //                int stepY = stepX;{                                     // for II region (\delta_{up} = \delta_{down})
 //                for (int stepY = 0; stepY < stepX; stepY++){            // for III region (\delta_{up} < \delta_{down})
-                        traders1[stepY * N_DELTAS + stepX] = new Trader(LOWEST_DELTA + DELTA_STEP * stepY, LOWEST_DELTA + DELTA_STEP * stepX, 0.3, (rand.nextDouble() > 0.5 ? 1 : -1));
+                    int deltaUp = LOWEST_DELTA + DELTA_STEP * stepY;
+                    int deltaDown = LOWEST_DELTA + DELTA_STEP * stepX;
+                    traders1[stepY * N_DELTAS + stepX] = new Trader(deltaUp, deltaDown, 0.3, (rand.nextDouble() > 0.5 ? 1 : -1));
+                    namesPriceAndState.add(String.format("A_%s_%s", deltaUp, deltaDown));
+                    priceAndStateList.add(new int[N_GENERATIONS]);
                 }
             }
 
-            // chose this for the Ist region only
-            for (int stepX = 0; stepX < N_DELTAS; stepX++){
-                for (int stepY = stepX + 1; stepY < N_DELTAS; stepY++){
-                    traders1[stepY * N_DELTAS + stepX] = new Trader(LOWEST_DELTA + DELTA_STEP * stepY, LOWEST_DELTA + DELTA_STEP * stepX, 0.3, (rand.nextDouble() > 0.5 ? 1 : -1));
-                }
-            }
 
 
             MM mm = new MM(MIN_PRICE_MOVE);
@@ -104,10 +104,15 @@ public class MM_square_grid {
 
             int listIndex = 0;
             for (int aGeneration = 0; aGeneration < N_GENERATIONS; aGeneration++) {
+
+                priceAndStateList.get(0)[aGeneration] = aTick.price; // put price to this list of statistics
+
                 int exceedVolume = 0;
 
-                for (Trader aTrader : traders1){
-                    exceedVolume += aTrader.runTrading(aTick);
+
+                for (int n = 0; n < traders1.length; n++){
+                    exceedVolume += traders1[n].runTrading(aTick);
+                    priceAndStateList.get(n + 1)[aGeneration] = traders1[n].runner.type;
                 }
 
 
@@ -132,6 +137,8 @@ public class MM_square_grid {
             }
 
             averageOvershootMove.finish();
+
+            AdditionalTools.saveResultsToFile("priceAndState", namesPriceAndState, priceAndStateList);
 
             if (iteration % 10 == 0){
                 System.out.println("Iteration " + iteration + " is executing");
@@ -167,27 +174,27 @@ public class MM_square_grid {
 
 
         for (int listIndex = 0; listIndex < N_GENERATIONS; listIndex++){
-            averagePrices[listIndex] = (int) sumPrices[listIndex] / nIterations;
-            averageNetVolume[listIndex] = (int) sumNetVolume[listIndex] / nIterations;
+            averagePrices[listIndex] = (int) sumPrices[listIndex] / N_EXPERIMENTS;
+            averageNetVolume[listIndex] = (int) sumNetVolume[listIndex] / N_EXPERIMENTS;
 
         }
 
         for (int listIndex = 0; listIndex < OS_STEPS; listIndex++){
-            OSup[listIndex] /= nIterations;
-            OSdown[listIndex] /= nIterations;
-            OStotal[listIndex] /= nIterations;
+            OSup[listIndex] /= N_EXPERIMENTS;
+            OSdown[listIndex] /= N_EXPERIMENTS;
+            OStotal[listIndex] /= N_EXPERIMENTS;
 
         }
 
         for (int stepX = 0; stepX < N_DELTAS; stepX++){
             for (int stepY = 0; stepY < N_DELTAS; stepY++){
-                totalEveryTrade[stepX][stepY] /= (float) nIterations;
+                totalEveryTrade[stepX][stepY] /= (float) N_EXPERIMENTS;
             }
         }
 
         for (int stepX = 0; stepX < N_DELTAS; stepX++){
             for (int stepY = 0; stepY < N_DELTAS; stepY++){
-                totalTotalPnL[stepX][stepY] /= (float) nIterations;
+                totalTotalPnL[stepX][stepY] /= (float) N_EXPERIMENTS;
             }
         }
 
