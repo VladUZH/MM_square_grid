@@ -9,9 +9,9 @@ public class MM_square_grid {
 
     public static final int LOWEST_DELTA = 1;
     public static final int DELTA_STEP = 1;
-    public static final int N_DELTAS = 50;
+    public static final int N_DELTAS = 2;
     public static final int START_PRICE = 0;
-    public static final int N_GENERATIONS = 10000;
+    public static final int N_GENERATIONS = 10000; // how many generations in one experiment
     public static final int MIN_PRICE_MOVE = 1;
     public static final int OS_STEPS = 100;
 
@@ -56,7 +56,9 @@ public class MM_square_grid {
 
 
 
-        int nIterations = 1000;
+
+
+        int nIterations = 1; // how many experiments
 
 
         for (int iteration = 0; iteration < nIterations; iteration++) {
@@ -66,15 +68,28 @@ public class MM_square_grid {
             namesAverageOvershoot.add("Delta");
             averageOvershootList.add(AdditionalTools.IntArrayToFloat(averageOvershootMove.arrayOfDeltas));
 
-            Trader[][] traders1 = new Trader[N_DELTAS][N_DELTAS];
+            Trader[] traders1 = new Trader[N_DELTAS * N_DELTAS];
 
             Random rand = new Random(1);
 
             for (int stepX = 0; stepX < N_DELTAS; stepX++){
                 for (int stepY = 0; stepY < N_DELTAS; stepY++){
-                    traders1[stepX][stepY] = new Trader(LOWEST_DELTA + DELTA_STEP * stepY, LOWEST_DELTA + DELTA_STEP * stepX, 0.3, (rand.nextDouble() > 0.5 ? 1 : -1));
+                    traders1[stepY * N_DELTAS + stepX] = new Trader(LOWEST_DELTA + DELTA_STEP * stepY, LOWEST_DELTA + DELTA_STEP * stepX, 0.3, (rand.nextDouble() > 0.5 ? 1 : -1));
                 }
             }
+
+
+//            for (int stepX = 0; stepX < N_DELTAS; stepX++) {
+//                for (int stepY = 0; stepY < N_DELTAS; stepY++) {
+//                    if (stepX == 0){ // "<" - I region, ">" - III region, "==" - II region
+////                        if (true) {
+//                        exceedVolume += (traders1[stepX][stepY].runTrading(aTick));
+//                    }
+//                }
+//            }
+
+
+
 
             MM mm = new MM(MIN_PRICE_MOVE);
 
@@ -83,20 +98,30 @@ public class MM_square_grid {
 
             ATick aTick = new ATick(START_PRICE);
 
+            int nOneUp = 0;
+            int nFollowingOneUp = 0;
+            int prevPriceMove = 0;
 
             int listIndex = 0;
             for (int aGeneration = 0; aGeneration < N_GENERATIONS; aGeneration++) {
                 int exceedVolume = 0;
-                for (int stepX = 0; stepX < N_DELTAS; stepX++) {
-                    for (int stepY = 0; stepY < N_DELTAS; stepY++) {
-//                        if (stepX == stepY){ // "<" - I region, ">" - III region, "==" - II region
-                        if (true) {
-                            exceedVolume += (traders1[stepX][stepY].runTrading(aTick));
-                        }
-                    }
+
+                for (Trader aTrader : traders1){
+                    exceedVolume += aTrader.runTrading(aTick);
                 }
+
+
                 averageOvershootMove.run(aTick);
                 int newPrice = mm.generateNextPrice(aTick.price, exceedVolume);
+
+                if ((newPrice - aTick.price == 1) && (prevPriceMove == 1)){
+                    nFollowingOneUp += 1;
+                }
+
+                if ((prevPriceMove = newPrice - aTick.price) == 1){
+                    nOneUp += 1;
+                }
+
 //                System.out.println(newPrice);
                 priceList[listIndex] = newPrice;
                 sumPrices[listIndex] += newPrice;
@@ -129,12 +154,12 @@ public class MM_square_grid {
                 OStotal[listIndex] += averageOvershootMove.massOfAverageTotal[listIndex];
             }
 
-            for (int stepX = 0; stepX < N_DELTAS; stepX++){
-                for (int stepY = 0; stepY < N_DELTAS; stepY++){
-                    totalEveryTrade[stepY][stepX] += traders1[stepX][stepY].totalNumberOfPositions; // should be like this to handle the final file structure problem.
-                    totalTotalPnL[stepY][stepX] += traders1[stepX][stepY].totalPnL; // should be like this to handle the final file structure problem.
-                }
-            }
+//            for (int stepX = 0; stepX < N_DELTAS; stepX++){
+//                for (int stepY = 0; stepY < N_DELTAS; stepY++){
+//                    totalEveryTrade[stepY][stepX] += traders1[stepX][stepY].totalNumberOfPositions; // should be like this to handle the final file structure problem.
+//                    totalTotalPnL[stepY][stepX] += traders1[stepX][stepY].totalPnL; // should be like this to handle the final file structure problem.
+//                }
+//            }
 
 
         }
@@ -190,17 +215,17 @@ public class MM_square_grid {
 
 
 
-        for (int i = 0; i < N_DELTAS; i++){
-            namesHowManyTrades.add(Integer.toString(i));
-            averageHowManyList.add(totalEveryTrade[i]); // do not forget to turn 90° counterclockwise!
-        }
-        AdditionalTools.saveResultsToFile("averageHowManyTrades", namesHowManyTrades, averageHowManyList);
-
-        for (int i = 0; i < N_DELTAS; i++){
-            namesTotalPnL.add(Integer.toString(i));
-            averageTotalPnL.add(totalTotalPnL[i]); // do not forget to turn 90° counterclockwise!
-        }
-        AdditionalTools.saveResultsToFile("averageTotalPnL", namesTotalPnL, averageTotalPnL);
+//        for (int i = 0; i < N_DELTAS; i++){
+//            namesHowManyTrades.add(Integer.toString(i));
+//            averageHowManyList.add(totalEveryTrade[i]); // do not forget to turn 90° counterclockwise!
+//        }
+//        AdditionalTools.saveResultsToFile("averageHowManyTrades", namesHowManyTrades, averageHowManyList);
+//
+//        for (int i = 0; i < N_DELTAS; i++){
+//            namesTotalPnL.add(Integer.toString(i));
+//            averageTotalPnL.add(totalTotalPnL[i]); // do not forget to turn 90° counterclockwise!
+//        }
+//        AdditionalTools.saveResultsToFile("averageTotalPnL", namesTotalPnL, averageTotalPnL);
 
 
 
