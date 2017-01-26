@@ -6,13 +6,13 @@ import java.util.Random;
  */
 public class MM {
 
-    int alpha;
+    double alpha;
     Random random;
     int minPriceStep;
 
 
     MM(int minPriceStep){
-        alpha = minPriceStep;
+        alpha = minPriceStep / Math.sqrt(2);
         random = new Random();
         this.minPriceStep = minPriceStep;
     }
