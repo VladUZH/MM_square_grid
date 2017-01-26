@@ -8,7 +8,7 @@ public class Runner {
     public int deltaUp;
     public int deltaDown;
     public int osL;
-    public int type;
+    public int type; // if 1 - wait for DC_UP, if -1 - wait for DC_Down
     public boolean initalized;
     public int reference;
 

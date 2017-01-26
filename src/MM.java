@@ -12,7 +12,7 @@ public class MM {
 
 
     MM(int minPriceStep){
-        alpha = minPriceStep / Math.sqrt(2);
+        alpha = minPriceStep;
         random = new Random();
         this.minPriceStep = minPriceStep;
     }

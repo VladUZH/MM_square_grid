@@ -9,10 +9,10 @@ public class MM_square_grid {
 
     public static final int LOWEST_DELTA = 1;
     public static final int DELTA_STEP = 1;
-    public static final int N_DELTAS = 2;
+    public static final int N_DELTAS = 50;
     public static final int START_PRICE = 0;
     public static final int N_GENERATIONS = 10000; // how many generations in one experiment
-    public static final int N_EXPERIMENTS = 100; // number of experiments
+    public static final int N_EXPERIMENTS = 1000; // number of experiments
     public static final int MIN_PRICE_MOVE = 1;
     public static final int OS_STEPS = 100;
 
@@ -53,9 +53,9 @@ public class MM_square_grid {
         long[] sumNetVolume = new long[N_GENERATIONS];
         int[] averageNetVolume = new int[N_GENERATIONS];
 
-        // for the price and state statistic:
-        ArrayList<String> namesPriceAndState = new ArrayList<>();
-        ArrayList<int[]> priceAndStateList = new ArrayList<>();
+//        // for the price and state statistic:
+//        ArrayList<String> namesPriceAndState = new ArrayList<>();
+//        ArrayList<int[]> priceAndStateList = new ArrayList<>();
 
 
 
@@ -64,8 +64,8 @@ public class MM_square_grid {
 
         for (int iteration = 0; iteration < N_EXPERIMENTS; iteration++) {
 
-            namesPriceAndState.add("Price");
-            priceAndStateList.add(new int[N_GENERATIONS]);
+//            namesPriceAndState.add("Price");
+//            priceAndStateList.add(new int[N_GENERATIONS]);
 
             AverageOvershootMove averageOvershootMove = new AverageOvershootMove(1, 101, OS_STEPS, false, "bla-bla");
             namesAverageOvershoot.add("Delta");
@@ -73,19 +73,19 @@ public class MM_square_grid {
 
             ArrayList<Trader> traders1 = new ArrayList<>();
 
-            Random rand = new Random(1);
+            Random rand = new Random(1); // to hold the same initial distribution
 
             // chose this for the FULL grid
             for (int stepX = 0; stepX < N_DELTAS; stepX++){
 //                for (int stepY = 0; stepY < N_DELTAS; stepY++){         // for ALL regions
-                for (int stepY = stepX + 1; stepY < N_DELTAS; stepY++){ // for I region (\delta_{up} > \delta_{down})
+//                for (int stepY = stepX; stepY < N_DELTAS; stepY++){ // for I region (\delta_{up} > \delta_{down})
 //                int stepY = stepX;{                                     // for II region (\delta_{up} = \delta_{down})
-//                for (int stepY = 0; stepY < stepX; stepY++){            // for III region (\delta_{up} < \delta_{down})
+                for (int stepY = 0; stepY < stepX; stepY++){            // for III region (\delta_{up} < \delta_{down})
                     int deltaUp = LOWEST_DELTA + DELTA_STEP * stepY;
                     int deltaDown = LOWEST_DELTA + DELTA_STEP * stepX;
-                    traders1.add(new Trader(deltaUp, deltaDown, 0.3, (rand.nextDouble() > 0.5 ? 1 : -1)));
-                    namesPriceAndState.add(String.format("A_%s_%s", deltaUp, deltaDown));
-                    priceAndStateList.add(new int[N_GENERATIONS]);
+                    traders1.add(new Trader(deltaUp, deltaDown, 0.9, (rand.nextDouble() > 0.5 ? 1 : -1)));
+//                    namesPriceAndState.add(String.format("A_%s_%s", deltaUp, deltaDown));
+//                    priceAndStateList.add(new int[N_GENERATIONS]);
                 }
             }
 
@@ -101,23 +101,31 @@ public class MM_square_grid {
             int nOneUp = 0;
             int nFollowingOneUp = 0;
             int prevPriceMove = 0;
+            int newPrice = 0;
+            int priceDif = 0;
 
             int listIndex = 0;
             for (int aGeneration = 0; aGeneration < N_GENERATIONS; aGeneration++) {
 
-                priceAndStateList.get(0)[aGeneration] = aTick.price; // put price to this list of statistics
+//                priceAndStateList.get(0)[aGeneration] = aTick.price; // put price to this list of statistics
 
                 int exceedVolume = 0;
 
 
                 for (int n = 0; n < traders1.size(); n++){
                     exceedVolume += traders1.get(n).runTrading(aTick);
-                    priceAndStateList.get(n + 1)[aGeneration] = traders1.get(n).runner.type;
+//                    priceAndStateList.get(n + 1)[aGeneration] = traders1.get(n).runner.type;
+//                    priceAndStateList.get(n + 1)[aGeneration] = traders1.get(n).currentPosition;
+
+                }
+
+                if ((priceDif == -2) && (traders1.get(0).currentPosition == 1) && (traders1.get(1).currentPosition == 1)){
+                    nOneUp++;
                 }
 
 
                 averageOvershootMove.run(aTick);
-                int newPrice = mm.generateNextPrice(aTick.price, exceedVolume);
+                newPrice = mm.generateNextPrice(aTick.price, exceedVolume);
 
                 if ((newPrice - aTick.price == 1) && (prevPriceMove == 1)){
                     nFollowingOneUp += 1;
@@ -132,13 +140,14 @@ public class MM_square_grid {
                 sumPrices[listIndex] += newPrice;
                 netVolume[listIndex] = exceedVolume;
                 sumNetVolume[listIndex] += exceedVolume;
+                priceDif = newPrice - aTick.price;
                 aTick = new ATick(newPrice);
                 listIndex++;
             }
 
             averageOvershootMove.finish();
 
-            AdditionalTools.saveResultsToFile("priceAndState", namesPriceAndState, priceAndStateList);
+//            AdditionalTools.saveResultsToFile("priceAndState", namesPriceAndState, priceAndStateList);
 
             if (iteration % 10 == 0){
                 System.out.println("Iteration " + iteration + " is executing");

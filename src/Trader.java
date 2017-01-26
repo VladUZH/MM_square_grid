@@ -10,12 +10,13 @@ class Trader {
     Random rand;
     double randLimit;
     int initialDCtype;
-    int currentPosition;
+    int currentPosition; // LONG if +1, SHORT if -1
     int totalNumberOfPositions;
     int totalPnL;
     int tradedPrice;
     int nNothing = 0;
     int nEvents = 0;
+    int dcPlusLong = 0;
 
 
 
@@ -40,6 +41,12 @@ class Trader {
         if (event != 0){ // in case of DC or deltaStar
 
             if (on){
+
+                if (currentPosition > 0){
+                    dcPlusLong += 1;
+                }
+
+
                 if (rand.nextDouble() < randLimit){ // should stay
                     nEvents++;
                     return 0;
@@ -49,7 +56,7 @@ class Trader {
                     totalNumberOfPositions += 1;
                     tradedPrice = aTick.price;
                     nEvents++;
-                    return currentPosition;
+                    return 2 * currentPosition;
 
                 }
             }
@@ -60,7 +67,7 @@ class Trader {
                 totalNumberOfPositions += 1;
                 tradedPrice = aTick.price;
                 nEvents++;
-                return currentPosition;
+                return 2 * currentPosition;
             }
 
 
