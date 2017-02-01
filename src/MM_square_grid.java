@@ -14,24 +14,22 @@ public class MM_square_grid {
 
     public static final int LOWEST_DELTA = 1;
     public static final int DELTA_STEP = 1;
-    public static final int N_DELTAS = 100;
+    public static final int N_DELTAS = 150;
 
     public static final String FILE_PATH = "D:/Data/";
-    public static DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
     public static int nDecimal = 3;
+
+    public static int saveEvery = 1000;
 
 
 
 
     public static void main(String[] args){
 
-//        String fileName = "OANDA_historical_position_ratios_data_EUR_USD.csv";
-//        String trainFileName = "EURUSD_2015_daily.csv";
         String[] names = new String[2];
         names[0] = "AUDJPY_UTC_Ticks_Bid_2015.02.02_2016.02.02.csv";
         names[1] = "AUDJPY_UTC_Ticks_Bid_2016.02.02_2017.01.31.csv";
-//        String fileName = "OANDA_historical_position_ratios_data_USD_CHF.csv";
 
         ATick aTick;
 
@@ -47,19 +45,17 @@ public class MM_square_grid {
 
 
 
-
         try {
 
             String line;
             String[] components;
-
-
 
             String dateString = new SimpleDateFormat("yyyy-MM-dd_hh-mm-ss").format(new Date());
             String outFileName = "RESULT_" + dateString + "_" + names[1];
             PrintWriter writer = new PrintWriter("Results/" + outFileName, "UTF-8");
             writer.println("Timestamp;Price;Agents_pctLong");
 
+            int prevPrice = 0;
             int counter = 0;
             for (String fileName : names){
 
@@ -67,10 +63,16 @@ public class MM_square_grid {
                 bufferedReader.readLine(); // to remove the header
 
 
+
                 while ((line = bufferedReader.readLine()) != null) {
                     components = line.split(",");
 
                     int intPrice = (int) (Double.parseDouble(components[2]) * Math.pow(10, nDecimal));
+
+                    if (intPrice == prevPrice){
+                        continue;
+                    }
+                    prevPrice = intPrice;
 
                     aTick = new ATick(intPrice);
 
@@ -91,31 +93,33 @@ public class MM_square_grid {
                         }
                     }
 
-                    float fractionLong = (nLong) * 1.0f / (nLong + nShort) * 100;
+                    float fractionLong = (float) nLong / (nLong + nShort) * 100;
 
-//                    if (Double.isNaN((double) fractionLong)){
-//                        System.out.println("NaN");
+//                    if (fractionLong == 100){
+//                        System.out.println("100% long");
 //                    }
 
                     if (counter % 10000 == 0){
                         System.out.println("Index = " + counter + ", Agents: " + fractionLong);
                     }
 
-                    writer.println(components[0] + ";" + components[2] + ";" + fractionLong);
+                    if (counter % saveEvery == 0){
+                        writer.println(components[0] + ";" + components[2] + ";" + fractionLong);
+                    }
+
                     counter++;
                 }
 
-                writer.close();
             }
+
+            writer.close();
+            System.out.println("Results saved into the file    " + outFileName);
 
         } catch (IOException ex){
             ex.printStackTrace();
         }
 
-
     }
-
-
 
 
 
