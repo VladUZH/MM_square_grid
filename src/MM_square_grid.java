@@ -72,7 +72,6 @@ public class MM_square_grid {
                     if (intPrice == prevPrice){
                         continue;
                     }
-                    prevPrice = intPrice;
 
                     aTick = new ATick(intPrice);
 
@@ -107,6 +106,7 @@ public class MM_square_grid {
                         writer.println(components[0] + ";" + components[2] + ";" + fractionLong);
                     }
 
+                    prevPrice = intPrice;
                     counter++;
                 }
 
