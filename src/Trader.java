@@ -45,7 +45,7 @@ class Trader {
                     currentPosition = currentPosition * (-1);
                     totalNumberOfPositions += 1;
                     tradedPrice = aTick.price;
-                    return currentPosition;
+                    return 2 * currentPosition;
 
                 }
             }
@@ -55,7 +55,7 @@ class Trader {
                 currentPosition = (rand.nextDouble() > 0.5 ? 1 : -1);
                 totalNumberOfPositions += 1;
                 tradedPrice = aTick.price;
-                return currentPosition;
+                return 2 * currentPosition;
             }
 
 
