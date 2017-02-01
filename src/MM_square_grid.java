@@ -11,8 +11,8 @@ public class MM_square_grid {
     public static final int DELTA_STEP = 1;
     public static final int N_DELTAS = 50;
     public static final int START_PRICE = 0;
-    public static final int N_GENERATIONS = 10000000; // how many generations in one experiment
-    public static final int N_EXPERIMENTS = 1; // number of experiments
+    public static final int N_GENERATIONS = 10000; // how many generations in one experiment
+    public static final int N_EXPERIMENTS = 1000; // number of experiments
     public static final int MIN_PRICE_MOVE = 1;
     public static final int OS_STEPS = 100;
 
@@ -112,7 +112,7 @@ public class MM_square_grid {
 
                 for (int n = 0; n < traders1.size(); n++){
                     exceedVolume += traders1.get(n).runTrading(aTick);
-//                    priceAndStateList.get(n + 1)[aGeneration] = traders1.get(n).runner.type;
+//                    priceAndStateList.get(n + 1)[aGeneration] = traders1.get(n).thisPriceIE;
                 }
 
 

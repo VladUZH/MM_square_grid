@@ -12,7 +12,11 @@ public class MM {
 
 
     MM(int minPriceStep){
-        alpha = minPriceStep / Math.sqrt(2);
+        alpha = minPriceStep / Math.sqrt(2.0); // for sqrt
+//        alpha = minPriceStep / 2.0; // for linear
+//        alpha = minPriceStep / Math.log(2.0); // for log
+//        alpha = Math.exp(1)/(Math.exp(1) - 1); // for (1-exp(-x))
+
         random = new Random();
         this.minPriceStep = minPriceStep;
     }
@@ -33,6 +37,8 @@ public class MM {
         double priceShift = alpha * Math.sqrt(Math.abs(exceedVolume)); // sqrt function
 //        double priceShift = alpha * (Math.abs(exceedVolume)); // linear function
 //        double priceShift = alpha * Math.log(Math.abs(exceedVolume)); // log function
+//        double priceShift = alpha * (1 - Math.exp(-Math.abs(exceedVolume))); // exp function
+
 
         if (exceedVolume < 0){
             return -(int) Math.floor(priceShift);

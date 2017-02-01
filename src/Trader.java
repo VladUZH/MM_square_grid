@@ -17,6 +17,7 @@ class Trader {
     int nNothing = 0;
     int nEvents = 0;
     int dcPlusLong = 0;
+    int thisPriceIE = 0;
 
 
 
@@ -39,6 +40,8 @@ class Trader {
         int event = runner.run(aTick);
 
         if (event != 0){ // in case of DC or deltaStar
+
+            thisPriceIE = 1;
 
             if (on){
 
@@ -73,6 +76,7 @@ class Trader {
 
         } else {
             nNothing++;
+            thisPriceIE = 0;
         }
         return 0;
 
