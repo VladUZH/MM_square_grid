@@ -30,8 +30,10 @@ public class Runner {
     }
 
     public int run(ATick aTick){
-        if( aTick == null )
+        if( aTick == null ){
+            System.out.println("Null tick");
             return 0;
+        }
 
         if( !initalized ){
             osL = 0; initalized = true;
