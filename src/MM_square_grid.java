@@ -14,13 +14,13 @@ public class MM_square_grid {
 
     public static final int LOWEST_DELTA = 1;
     public static final int DELTA_STEP = 1;
-    public static final int N_DELTAS = 150;
+    public static final int N_DELTAS = 50;
 
     public static final String FILE_PATH = "D:/Data/";
 
-    public static int nDecimal = 3;
+    public static int nDecimal = 4;
 
-    public static int saveEvery = 1000;
+    public static int saveEvery = 10000;
 
 
 
@@ -80,8 +80,8 @@ public class MM_square_grid {
 
                     for (int stepX = 0; stepX < N_DELTAS; stepX++) {
                         for (int stepY = 0; stepY < N_DELTAS; stepY++) {
-                        if (stepX == stepY){ // "<" - I region, ">" - III region, "==" - II region
-//                            if (true) {
+//                        if (stepX == stepY){ // "<" - I region, ">" - III region, "==" - II region
+                            if (true) {
                                 int traderPosition = traders1[stepX][stepY].runTrading(aTick);
                                 if (traderPosition > 0){
                                     nLong += 2;

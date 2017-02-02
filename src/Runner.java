@@ -8,7 +8,7 @@ public class Runner {
     public int deltaUp;
     public int deltaDown;
     public int osL;
-    public int type;
+    public int type; // if 1 - wait for DC_UP, if -1 - wait for DC_Down
     public boolean initalized;
     public int reference;
 
@@ -30,10 +30,8 @@ public class Runner {
     }
 
     public int run(ATick aTick){
-        if( aTick == null ){
-            System.out.println("Null tick");
+        if( aTick == null )
             return 0;
-        }
 
         if( !initalized ){
             osL = 0; initalized = true;
