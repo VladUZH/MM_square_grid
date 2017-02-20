@@ -18,9 +18,9 @@ public class MM_square_grid {
 
     public static final String FILE_PATH = "D:/Data/";
 
-    public static int nDecimal = 4;
+    public static int nDecimal = 3;
 
-    public static int saveEvery = 10000;
+    public static int saveEvery = 10000; // allows to reduce the final volume of information
 
 
 
