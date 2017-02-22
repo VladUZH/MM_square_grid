@@ -11,6 +11,8 @@ public class Runner {
     public int type; // if 1 - wait for DC_UP, if -1 - wait for DC_Down
     public boolean initalized;
     public int reference;
+    boolean IElatestPrice;
+
 
     public Runner(int threshUp, int threshDown, ATick aTick, int type){
         prevExtreme = aTick.price;
@@ -39,7 +41,7 @@ public class Runner {
             prevDC = aTick.price;
             extreme = aTick.price;
             reference = aTick.price;
-
+            IElatestPrice = false;
             return 0;
         }
 
@@ -50,6 +52,7 @@ public class Runner {
                 extreme = aTick.price;
                 prevDC = aTick.price;
                 reference = aTick.price;
+                IElatestPrice = true;
                 return 1;
             }
             if( aTick.price < extreme ){
@@ -59,8 +62,10 @@ public class Runner {
 
                 if( (extreme - reference) <= -deltaDown ){
                     reference = extreme;
+                    IElatestPrice = true;
                     return -2;
                 }
+                IElatestPrice = false;
                 return 0;
             }
         }else if( type == 1 ){
@@ -70,6 +75,7 @@ public class Runner {
                 extreme = aTick.price;
                 prevDC = aTick.price;
                 reference = aTick.price;
+                IElatestPrice = true;
                 return -1;
             }
             if( aTick.price > extreme ){
@@ -79,12 +85,14 @@ public class Runner {
 
                 if( (extreme - reference) >= deltaUp ){
                     reference = extreme;
+                    IElatestPrice = true;
                     return 2;
                 }
+                IElatestPrice = false;
                 return 0;
             }
         }
-
+        IElatestPrice = false;
         return 0;
     }
 
