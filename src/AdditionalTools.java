@@ -1,4 +1,5 @@
 
+import java.io.BufferedReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -315,6 +316,50 @@ public class AdditionalTools {
         }
 
         return floatArray;
+    }
+
+
+
+
+
+    public static class RecordPricesAndStates{
+
+        PrintWriter writer;
+        ArrayList<Trader> listOfTraders;
+
+        public RecordPricesAndStates(ArrayList<Trader> listOfTraders){
+
+            this.listOfTraders = listOfTraders;
+
+            String dateString = new SimpleDateFormat("yyyy-MM-dd_hh-mm-ss").format(new Date());
+            String fileName = "priceAndStates_" + dateString + ".csv";
+            try{
+                writer = new PrintWriter("Results/" + fileName, "UTF-8");
+                String stringToWrite = "Price;";
+                for (Trader aTrader : listOfTraders){
+                    stringToWrite += "IE_" + aTrader.runner.deltaUp + "_" + aTrader.runner.deltaDown + ";P_" + aTrader.runner.deltaUp + "_" + aTrader.runner.deltaDown + ";";
+                }
+                writer.println(stringToWrite);
+            } catch (Exception ex){
+                ex.printStackTrace();
+            }
+        }
+
+        public void updateState(int currentPrice){
+
+            String stringToWrite = Integer.toString(currentPrice) + ";"; // will form a total string. Here just put current price.
+
+            for (Trader aTrader : listOfTraders){
+                stringToWrite += aTrader.runner.IElatestPrice + ";" + (aTrader.traded ? -aTrader.currentPosition : aTrader.currentPosition) + ";";
+            }
+            writer.println(stringToWrite);
+        }
+
+        public void finish(){
+            writer.close();
+        }
+
+
     }
 
 
