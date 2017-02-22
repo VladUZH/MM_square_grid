@@ -9,12 +9,12 @@ public class MM_square_grid {
 
     public static final int LOWEST_DELTA = 1;
     public static final int DELTA_STEP = 1;
-    public static final int N_DELTAS = 50;
+    public static final int N_DELTAS = 2;
     public static final int START_PRICE = 0;
     public static final int N_GENERATIONS = 10000; // how many generations in one experiment
-    public static final int N_EXPERIMENTS = 1000; // number of experiments
+    public static final int N_EXPERIMENTS = 1; // number of experiments
     public static final int MIN_PRICE_MOVE = 1;
-    public static final int OS_STEPS = 100;
+    public static final int OS_STEPS = 10;
 
 
 
@@ -75,8 +75,7 @@ public class MM_square_grid {
 
             Random rand = new Random(1);
 
-            // chose this for the FULL grid
-            for (int stepX = 0; stepX < N_DELTAS; stepX++){
+            for (int stepX = 0; stepX < N_DELTAS - 1; stepX++){
                 for (int stepY = 0; stepY < N_DELTAS; stepY++){         // for ALL regions
 //                for (int stepY = stepX + 1; stepY < N_DELTAS; stepY++){ // for I region (\delta_{up} > \delta_{down})
 //                int stepY = stepX;{                                     // for II region (\delta_{up} = \delta_{down})
@@ -102,6 +101,8 @@ public class MM_square_grid {
             int nFollowingOneUp = 0;
             int prevPriceMove = 0;
 
+            AdditionalTools.RecordPricesAndStates recordPricesAndStates = new AdditionalTools.RecordPricesAndStates(traders1);
+
             int listIndex = 0;
             for (int aGeneration = 0; aGeneration < N_GENERATIONS; aGeneration++) {
 
@@ -109,11 +110,13 @@ public class MM_square_grid {
 
                 int exceedVolume = 0;
 
-
                 for (int n = 0; n < traders1.size(); n++){
                     exceedVolume += traders1.get(n).runTrading(aTick);
 //                    priceAndStateList.get(n + 1)[aGeneration] = traders1.get(n).thisPriceIE;
                 }
+
+                recordPricesAndStates.updateState(aTick.price);
+
 
 
                 averageOvershootMove.run(aTick);
@@ -135,6 +138,8 @@ public class MM_square_grid {
                 aTick = new ATick(newPrice);
                 listIndex++;
             }
+
+            recordPricesAndStates.finish();
 
             averageOvershootMove.finish();
 
