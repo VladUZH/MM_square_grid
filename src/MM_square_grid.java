@@ -209,11 +209,11 @@ public class MM_square_grid {
 
         namesGeneratedPrices.add("Average");
         generatedPricesList.add(averagePrices);
-        AdditionalTools.saveResultsToFile("generatedPrices", namesGeneratedPrices, generatedPricesList);
+//        AdditionalTools.saveResultsToFile("generatedPrices", namesGeneratedPrices, generatedPricesList);
 
         namesNetVolume.add("Average");
         netVolumeList.add(averageNetVolume);
-        AdditionalTools.saveResultsToFile("netVolume", namesNetVolume, netVolumeList);
+//        AdditionalTools.saveResultsToFile("netVolume", namesNetVolume, netVolumeList);
 
 
 
@@ -223,7 +223,7 @@ public class MM_square_grid {
         averageOvershootList.add(OSdown);
         namesAverageOvershoot.add("AverageTOTAL");
         averageOvershootList.add(OStotal);
-        AdditionalTools.saveResultsToFile("averageOvershoots", namesAverageOvershoot, averageOvershootList, true);
+//        AdditionalTools.saveResultsToFile("averageOvershoots", namesAverageOvershoot, averageOvershootList, true);
 
 
 
