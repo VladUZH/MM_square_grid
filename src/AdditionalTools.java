@@ -332,7 +332,7 @@ public class AdditionalTools {
             this.listOfTraders = listOfTraders;
 
             String dateString = new SimpleDateFormat("yyyy-MM-dd_hh-mm-ss").format(new Date());
-            String fileName = "priceAndStates_" + dateString + ".csv";
+            String fileName = "priceAndStates_" + Math.round(listOfTraders.get(0).randLimit * 100.f) / 100.0f + "_" + dateString + ".csv";
             try{
                 writer = new PrintWriter("Results/" + fileName, "UTF-8");
                 String stringToWrite = "Price;";
