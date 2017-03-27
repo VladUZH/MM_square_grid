@@ -8,7 +8,7 @@ class Trader {
     Runner runner;
     boolean on;
     Random rand;
-    double randLimit;
+    double randLimit; // prob to flip
     int initialDCtype;
     int currentPosition; // LONG if +1, SHORT if -1
     int totalNumberOfPositions;
@@ -51,7 +51,7 @@ class Trader {
                 }
 
 
-                if (rand.nextDouble() < randLimit){ // should stay
+                if (rand.nextDouble() > randLimit){ // should stay
                     nEvents++;
                     traded = false;
                     return 0;
@@ -70,6 +70,7 @@ class Trader {
             else if (!on){ // open only in case of DC (not OS)
                 on = true;
                 currentPosition = (rand.nextDouble() > 0.5 ? 1 : -1);
+//                currentPosition = 1; // to test fixed first position
                 totalNumberOfPositions += 1;
                 tradedPrice = aTick.price;
                 nEvents++;
